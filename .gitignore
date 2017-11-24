@@ -1,0 +1,8 @@
+/vendor
+composer.lock
+composer.phar
+.directory
+reports/
+documents/
+.idea
+build
