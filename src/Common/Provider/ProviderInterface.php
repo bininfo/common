@@ -1,6 +1,7 @@
 <?php
 namespace BinInfo\Common\Provider;
 
+use BinInfo\Common\Exception\ProviderLimitExceedException;
 use BinInfo\Common\Model\Bin;
 
 /**
@@ -9,20 +10,26 @@ use BinInfo\Common\Model\Bin;
  */
 interface ProviderInterface
 {
-
+    /**
+     * @return string
+     */
     public function getName();
 
     /**
      * @param $binNumber
      * @return Bin
+     * @throws ProviderLimitExceedException
      */
     public function get($binNumber);
 
+    /**
+     * @return array
+     */
     public function getDefaultParameters();
 
     /**
      * @param array $parameters
-     * @return mixed
+     * @return $this
      */
     public function initialize(array $parameters = []);
 

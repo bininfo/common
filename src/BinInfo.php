@@ -3,6 +3,7 @@
 namespace BinInfo;
 
 use BinInfo\Common\Exception\BinNotFoundException;
+use BinInfo\Common\Exception\ProviderLimitExceedException;
 use BinInfo\Common\Exception\ProviderNotFoundException;
 use BinInfo\Common\Model\Bin;
 use BinInfo\Common\Provider\ProviderFactory;
@@ -30,11 +31,11 @@ class BinInfo
      * Get bin info from providers, it check providers one by one to get bin info unless provider name provided
      * If provide name provided it checks info in given provider
      *
-     * @param $binNumber
-     * @param null $providerName
+     * @param $bin
      * @return Bin
      * @throws BinNotFoundException
      * @throws ProviderNotFoundException
+     * @throws ProviderLimitExceedException
      */
     public static function get($bin)
     {
@@ -46,8 +47,14 @@ class BinInfo
         $bin = preg_replace('/[^0-9]/', '', $bin);
 
         foreach ($factory->all() as $name => $provider) {
-            if ($data = $provider->get($bin)) {
-                return $data;
+            try {
+                if ($data = $provider->get($bin)) {
+                    return $data;
+                }
+            } catch (ProviderLimitExceedException $e) {
+                if ($provider === end($factory->all())) {
+                    throw $e;
+                }
             }
         }
 
@@ -58,7 +65,7 @@ class BinInfo
      * Get bin info from providers, it check providers one by one to get bin info unless provider name provided
      * If provide name provided it checks info in given provider
      *
-     * @param $binNumber
+     * @param $bin
      * @param null $providerName
      * @return Bin
      * @throws BinNotFoundException

@@ -16,6 +16,9 @@ use BinInfo\Common\Util\Helper;
  */
 abstract class AbstractProvider implements ProviderInterface
 {
+    /**
+     * @var array
+     */
     protected $parameters;
 
     /**
